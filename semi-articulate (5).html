@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semi-Articulate</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1714;
+    --paper: #f5f0e8;
+    --paper2: #ede7d9;
+    --accent: #a20100;
+    --muted: #8a7f72;
+    --light: #faf7f2;
+    --border: rgba(26,23,20,0.13);
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 999;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 3rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: rgba(245,240,232,0.93);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.25rem; text-decoration: none; color: var(--ink); }
+  .logo em { font-style: italic; color: var(--accent); }
+  .nav-links { display: flex; gap: 1.8rem; align-items: center; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta { background: var(--ink) !important; color: var(--paper) !important; padding: 0.4rem 1rem; border-radius: 2px; }
+  .nav-cta:hover { background: var(--accent) !important; }
+
+  /* TABS */
+  .tab-bar {
+    display: flex; border-bottom: 1px solid var(--border);
+    padding: 0 3rem; background: var(--light); overflow-x: auto;
+  }
+  .tab {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1rem 1.5rem 0.9rem; cursor: pointer; color: var(--muted);
+    border: none; border-bottom: 2px solid transparent;
+    background: none; transition: all 0.2s; white-space: nowrap;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  /* PAGES */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  /* HOME */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 80vh; border-bottom: 1px solid var(--border); }
+  .hero-left { padding: 5rem 3rem; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid var(--border); }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.4rem; }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 4.5vw, 4rem); line-height: 1.07; letter-spacing: -0.02em; margin-bottom: 1.6rem; }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-sub { font-size: 0.98rem; line-height: 1.75; color: var(--muted); max-width: 400px; margin-bottom: 2.5rem; font-weight: 300; }
+  .signup-row { display: flex; max-width: 420px; }
+  .signup-row input {
+    flex: 1; padding: 0.82rem 1rem;
+    border: 1px solid var(--border); border-right: none;
+    background: var(--light); font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; color: var(--ink); outline: none;
+    border-radius: 2px 0 0 2px;
+  }
+  .signup-row input:focus { border-color: var(--ink); }
+  .signup-row input::placeholder { color: var(--muted); }
+  .signup-row button {
+    padding: 0.82rem 1.3rem; background: var(--accent); color: white; border: none;
+    font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border-radius: 0 2px 2px 0; transition: background 0.2s; white-space: nowrap;
+  }
+  .signup-row button:hover { background: #871000; }
+  .signup-note { margin-top: 0.9rem; font-size: 0.78rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .hero-right { background: var(--paper2); padding: 5rem 3rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .big-q { font-family: 'Playfair Display', serif; font-size: 10rem; line-height: 1; color: var(--ink); opacity: 0.06; position: absolute; top: 1rem; right: 2rem; font-style: italic; pointer-events: none; }
+  .how-it-works { position: relative; z-index: 2; }
+  .how-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+  .step { display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 1.8rem; }
+  .step-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--accent); opacity: 0.5; line-height: 1; min-width: 28px; font-style: italic; }
+  .step-text h4 { font-size: 0.92rem; font-weight: 500; margin-bottom: 0.25rem; }
+  .step-text p { font-size: 0.83rem; color: var(--muted); line-height: 1.5; }
+
+  /* TODAY'S PROMPT */
+  .prompt-page { max-width: 780px; margin: 0 auto; padding: 4rem 2rem; }
+  .prompt-meta { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.8rem; }
+  .prompt-meta::before { content: ''; width: 28px; height: 1px; background: var(--muted); display: block; }
+  .prompt-question { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.25; font-style: italic; margin-bottom: 2.5rem; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .response-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.8rem; }
+  textarea.response-box { width: 100%; min-height: 180px; padding: 1.1rem 1.2rem; background: var(--light); border: 1px solid var(--border); border-radius: 2px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; line-height: 1.7; color: var(--ink); resize: vertical; outline: none; transition: border-color 0.2s; }
+  textarea.response-box:focus { border-color: var(--ink); }
+  textarea.response-box::placeholder { color: var(--muted); }
+
+  .publish-toggle { display: flex; align-items: center; gap: 1rem; margin: 1.2rem 0; flex-wrap: wrap; }
+  .toggle-label { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .toggle-group { display: flex; }
+  .toggle-opt { padding: 0.45rem 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .toggle-opt:first-child { border-radius: 2px 0 0 2px; }
+  .toggle-opt:last-child { border-radius: 0 2px 2px 0; border-left: none; }
+  .toggle-opt:nth-child(2) { border-left: none; }
+  .toggle-opt.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .btn-row { display: flex; gap: 0.8rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .btn-primary { padding: 0.75rem 1.6rem; background: var(--ink); color: var(--paper); border: none; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.2s; }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-secondary { padding: 0.75rem 1.6rem; background: transparent; color: var(--muted); border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+  .btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
+  .success-msg { display: none; margin-top: 1rem; padding: 0.8rem 1rem; background: #e8f5e9; border-left: 3px solid #4caf50; font-size: 0.85rem; color: #2e7d32; border-radius: 2px; }
+
+  /* FEED */
+  .feed-page { max-width: 780px; margin: 0 auto; padding: 4rem 2rem; }
+  .feed-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+  .feed-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; letter-spacing: -0.01em; }
+  .feed-count { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .feed-prompt-banner { background: var(--paper2); border: 1px solid var(--border); padding: 1.4rem 1.6rem; border-radius: 2px; margin-bottom: 2.5rem; }
+  .feed-prompt-banner .eyebrow { margin-bottom: 0.5rem; font-size: 0.62rem; }
+  .feed-prompt-banner p { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-style: italic; line-height: 1.4; }
+  .entry-card { border: 1px solid var(--border); border-radius: 2px; padding: 1.6rem; margin-bottom: 1.2rem; background: var(--light); transition: border-color 0.2s; animation: fadeIn 0.4s ease both; }
+  .entry-card:hover { border-color: rgba(26,23,20,0.28); }
+  .entry-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .entry-author { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .entry-author span { color: var(--ink); }
+  .entry-date { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; color: var(--muted); }
+  .entry-body { font-size: 0.95rem; line-height: 1.75; color: var(--ink); font-weight: 300; }
+  .entry-tag { display: inline-block; margin-top: 1rem; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 2px; background: var(--paper2); color: var(--muted); }
+
+  /* DIARY */
+  .diary-page { max-width: 780px; margin: 0 auto; padding: 4rem 2rem; }
+  .diary-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; letter-spacing: -0.01em; margin-bottom: 0.4rem; }
+  .diary-sub { font-size: 0.85rem; color: var(--muted); font-weight: 300; margin-bottom: 2.5rem; }
+  .diary-empty { text-align: center; padding: 4rem 2rem; border: 1px dashed var(--border); border-radius: 2px; }
+  .diary-empty p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+  .diary-entry { border-left: 2px solid var(--border); padding: 0 0 2.5rem 1.8rem; position: relative; }
+  .diary-entry::before { content: ''; position: absolute; left: -5px; top: 0.4rem; width: 8px; height: 8px; border-radius: 50%; background: var(--paper2); border: 2px solid var(--muted); }
+  .diary-entry.published::before { background: var(--accent); border-color: var(--accent); }
+  .diary-date { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .diary-q { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; margin-bottom: 0.6rem; color: var(--muted); }
+  .diary-a { font-size: 0.9rem; line-height: 1.7; font-weight: 300; }
+  .diary-status { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.7rem; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .diary-status.pub { color: var(--accent); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; display: inline-block; }
+
+  /* FOOTER */
+  /* PODCAST INFO STRIP */
+  .podcast-strip {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .strip-block {
+    padding: 3rem 3rem; border-right: 1px solid var(--border);
+  }
+  .strip-block:last-child { border-right: none; }
+  .strip-block .eyebrow { margin-bottom: 0.8rem; }
+  .strip-block h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.7rem; letter-spacing: -0.01em; }
+  .strip-block p { font-size: 0.88rem; line-height: 1.7; color: var(--muted); font-weight: 300; }
+  .listen-links { display: flex; gap: 0.6rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .listen-btn { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.4rem 0.9rem; border: 1px solid var(--border); border-radius: 2px; color: var(--muted); text-decoration: none; transition: all 0.2s; }
+  .listen-btn:hover { color: var(--ink); border-color: var(--ink); }
+
+  /* ABOUT PAGE */
+  .about-page { max-width: 820px; margin: 0 auto; padding: 5rem 2rem; }
+  .about-hero { margin-bottom: 4rem; }
+  .about-hero .eyebrow { margin-bottom: 1rem; }
+  .about-hero h2 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+  .about-hero h2 em { font-style: italic; color: var(--accent); }
+  .about-hero p { font-size: 1rem; line-height: 1.8; color: var(--muted); font-weight: 300; max-width: 600px; }
+  .about-divider { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+  .hosts-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; }
+  .hosts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .host-card { background: var(--paper2); border: 1px solid var(--border); border-radius: 2px; padding: 2rem; }
+  .host-initial { width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: 'Playfair Display', serif; font-size: 1.4rem; font-style: italic; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+  .host-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .host-role { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.9rem; }
+  .host-bio { font-size: 0.88rem; line-height: 1.7; color: var(--muted); font-weight: 300; }
+  .about-mission { background: var(--ink); color: var(--paper); padding: 3rem; border-radius: 2px; margin-top: 3rem; }
+  .about-mission .eyebrow { color: rgba(245,240,232,0.4); margin-bottom: 1rem; }
+  .about-mission blockquote { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.7rem); font-style: italic; line-height: 1.4; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  footer p { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; color: var(--muted); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .podcast-strip { grid-template-columns: 1fr; }
+    .strip-block { border-right: none; border-bottom: 1px solid var(--border); padding: 2rem 1.5rem; }
+    .hosts-grid { grid-template-columns: 1fr; }
+    .about-page { padding: 3rem 1.2rem; }
+    .about-mission { padding: 2rem 1.5rem; }
+  }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--ink); color: var(--paper); padding: 0.8rem 1.4rem; border-radius: 2px; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; z-index: 9999; transform: translateY(80px); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 700px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { gap: 1rem; }
+    .tab-bar { padding: 0 1rem; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-left, .hero-right { padding: 3rem 1.5rem; }
+    .hero-right { border-top: 1px solid var(--border); }
+    .prompt-page, .feed-page, .diary-page { padding: 2.5rem 1.2rem; }
+    footer { padding: 1.5rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="#" onclick="showPage('home')">Semi-<em>Articulate</em></a>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('feed')">Feed</a>
+    <a href="#" onclick="showPage('prompt')">Today's Prompt</a>
+    <a href="#" onclick="showPage('about')">About</a>
+    <a href="#" class="nav-cta" onclick="showPage('home')">Subscribe</a>
+  </div>
+</nav>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showPage('home')" data-page="home">Home</button>
+  <button class="tab" onclick="showPage('prompt')" data-page="prompt">Today's Prompt</button>
+  <button class="tab" onclick="showPage('feed')" data-page="feed">Community Feed</button>
+  <button class="tab" onclick="showPage('diary')" data-page="diary">My Diary</button>
+  <button class="tab" onclick="showPage('about')" data-page="about">About</button>
+</div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-left">
+      <p class="eyebrow">Semi-Articulate Podcast</p>
+      <h1 class="hero-title">A question,<br>every day.<br><em>Think it through.</em></h1>
+      <p class="hero-sub">Get a thought-provoking prompt in your inbox each morning. Write your answer. Keep it private — or share it with the community.</p>
+      <div id="mc_embed_shell">
+        <style type="text/css">
+          #mc_embed_signup { background: transparent !important; font: 14px 'DM Sans', sans-serif !important; width: 100% !important; }
+          #mc_embed_signup h2 { display: none; }
+          #mc_embed_signup .indicates-required { display: none; }
+          #mc_embed_signup .mc-field-group { padding-bottom: 0 !important; margin-bottom: 0.5rem !important; }
+          #mc_embed_signup .mc-field-group label { display: none; }
+          #mc_embed_signup .mc-field-group input { width: 100% !important; padding: 0.82rem 1rem !important; border: 1px solid var(--border) !important; background: var(--light) !important; font-family: 'DM Sans', sans-serif !important; font-size: 0.9rem !important; color: var(--ink) !important; border-radius: 2px !important; outline: none !important; box-shadow: none !important; }
+          #mc_embed_signup .mc-field-group input:focus { border-color: var(--ink) !important; }
+          #mc_embed_signup .mc-field-group input::placeholder { color: var(--muted) !important; }
+          #mc_embed_signup .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+          #mc_embed_signup .button { width: 100% !important; background: var(--accent) !important; color: white !important; border: none !important; padding: 0.82rem 1.3rem !important; font-family: 'DM Mono', monospace !important; font-size: 0.68rem !important; letter-spacing: 0.08em !important; text-transform: uppercase !important; cursor: pointer !important; border-radius: 2px !important; height: auto !important; line-height: normal !important; margin-top: 0.1rem !important; }
+          #mc_embed_signup .button:hover { background: #871000 !important; }
+          #mc_embed_signup form { padding: 0 !important; }
+          #mc_embed_signup .foot { display: block !important; }
+          #mc_embed_signup .optionalParent { display: none !important; }
+          #mc_embed_signup #mce-responses { display: none; }
+        </style>
+        <div id="mc_embed_signup">
+          <form action="https://semiarticulatepodcast.us4.list-manage.com/subscribe/post?u=2b178e20b58d9db5952b80b88&amp;id=9ac46aec45&amp;f_id=00656ceaf0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+            <div id="mc_embed_signup_scroll">
+              <div class="name-row">
+                <div class="mc-field-group"><input type="text" name="FNAME" class="text" id="mce-FNAME" placeholder="First name" value=""></div>
+                <div class="mc-field-group"><input type="text" name="LNAME" class="text" id="mce-LNAME" placeholder="Last name" value=""></div>
+              </div>
+              <div class="mc-field-group"><input type="email" name="EMAIL" class="required email" id="mce-EMAIL" required placeholder="your@email.com" value=""></div>
+              <div id="mce-responses" class="clear foot">
+                <div class="response" id="mce-error-response" style="display:none"></div>
+                <div class="response" id="mce-success-response" style="display:none"></div>
+              </div>
+              <div aria-hidden="true" style="position:absolute;left:-5000px"><input type="text" name="b_2b178e20b58d9db5952b80b88_9ac46aec45" tabindex="-1" value=""></div>
+              <div class="foot"><input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button" value="Subscribe"></div>
+            </div>
+          </form>
+        </div>
+        <script type="text/javascript" src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js"></script>
+        <script type="text/javascript">(function($){window.fnames=new Array();window.ftypes=new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';}(jQuery));var $mcj=jQuery.noConflict(true);</script>
+      </div>
+      <p class="signup-note">One email a day. No spam. Unsubscribe anytime.</p>
+    </div>
+    <div class="hero-right">
+      <div class="big-q">"</div>
+      <div class="how-it-works">
+        <p class="how-title">How it works</p>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Get the daily prompt</h4>
+            <p>A new question lands in your inbox every morning — something worth sitting with.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Write your answer</h4>
+            <p>Come back to the site and respond. It saves to your personal diary automatically.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Share (or don't)</h4>
+            <p>Publish anonymously, post with your name, or keep it just for you.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <h4>Read the community</h4>
+            <p>Browse the feed to see how others answered the same question.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="podcast-strip">
+    <div class="strip-block">
+      <p class="eyebrow">The Podcast</p>
+      <h3>Some things are hard to say out loud.</h3>
+      <p>Semi-Articulate is a podcast about the topics that sit just beyond easy words — the feelings, questions, and ideas that most people think about but rarely talk through. We try to say them anyway.</p>
+      <div class="listen-links">
+        <a href="#" class="listen-btn">Spotify</a>
+        <a href="#" class="listen-btn">Apple Podcasts</a>
+        <a href="#" class="listen-btn">All Episodes</a>
+      </div>
+    </div>
+    <div class="strip-block">
+      <p class="eyebrow">What We Talk About</p>
+      <h3>Deep topics. Honest conversations.</h3>
+      <p>From identity and relationships to ambition, grief, and everything in between — if it's thought-provoking and a little hard to articulate, it probably belongs on this show.</p>
+    </div>
+    <div class="strip-block">
+      <p class="eyebrow">The Daily Prompt</p>
+      <h3>The question is yours to answer.</h3>
+      <p>Each day we send out a prompt inspired by the kinds of conversations we have on the show. Sign up, reflect, and share with a community of people doing the same.</p>
+    </div>
+  </div>
+  <footer>
+    <p>© 2026 Semi-Articulate Podcast</p>
+    <p><a href="#">Spotify</a> &nbsp;·&nbsp; <a href="#">Apple Podcasts</a> &nbsp;·&nbsp; <a href="#">Instagram</a></p>
+  </footer>
+</div>
+
+<!-- TODAY'S PROMPT -->
+<div class="page" id="page-prompt">
+  <div class="prompt-page">
+    <p class="prompt-meta">Prompt #47 &nbsp;·&nbsp; Feb 28, 2026</p>
+    <h2 class="prompt-question">"What's something you've changed your mind about in the last year — and what actually changed it?"</h2>
+    <hr class="divider">
+    <p class="response-label">Your response</p>
+    <textarea class="response-box" id="response-text" placeholder="Start writing… there's no wrong answer."></textarea>
+    <div class="publish-toggle">
+      <span class="toggle-label">Publish as</span>
+      <div class="toggle-group">
+        <button class="toggle-opt selected" onclick="selectToggle(this,'private')">Private</button>
+        <button class="toggle-opt" onclick="selectToggle(this,'anon')">Anonymous</button>
+        <button class="toggle-opt" onclick="selectToggle(this,'named')">My Name</button>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="saveResponse()">Save to Diary</button>
+      <button class="btn-secondary" onclick="showPage('feed')">Read Others' Answers →</button>
+    </div>
+    <div class="success-msg" id="save-success">✓ Saved to your diary!</div>
+  </div>
+</div>
+
+<!-- COMMUNITY FEED -->
+<div class="page" id="page-feed">
+  <div class="feed-page">
+    <div class="feed-header">
+      <h2 class="feed-title">Community Responses</h2>
+      <span class="feed-count" id="feed-count">38 responses today</span>
+    </div>
+    <div class="feed-prompt-banner">
+      <p class="eyebrow">Today's Prompt</p>
+      <p>"What's something you've changed your mind about in the last year — and what actually changed it?"</p>
+    </div>
+    <div id="feed-entries">
+      <div class="entry-card">
+        <div class="entry-top">
+          <span class="entry-author"><span>Marcus T.</span></span>
+          <span class="entry-date">Feb 28 · 9:14am</span>
+        </div>
+        <p class="entry-body">I used to think ambition was always a virtue. Then I watched a close friend burn out chasing a version of success that wasn't even hers. The thing that changed my mind wasn't a book or a podcast — it was just watching someone I admired look completely hollow after getting exactly what she said she wanted.</p>
+        <span class="entry-tag">named</span>
+      </div>
+      <div class="entry-card" style="animation-delay:0.08s">
+        <div class="entry-top">
+          <span class="entry-author">Anonymous</span>
+          <span class="entry-date">Feb 28 · 8:02am</span>
+        </div>
+        <p class="entry-body">Honestly? That being a morning person is a personality, not a discipline. I spent years thinking I was lazy for not being sharp at 6am. Turns out I'm just a different kind of person. Letting go of that shame was weirdly the most productive thing I did all year.</p>
+        <span class="entry-tag">anonymous</span>
+      </div>
+      <div class="entry-card" style="animation-delay:0.16s">
+        <div class="entry-top">
+          <span class="entry-author"><span>Priya S.</span></span>
+          <span class="entry-date">Feb 28 · 7:45am</span>
+        </div>
+        <p class="entry-body">I changed my mind about apologies. I used to think a good apology needed a long explanation. Now I think that's just self-protection wearing a sorry face. What changed it was receiving one from my dad — two sentences, no excuses. It was the first one that ever actually landed.</p>
+        <span class="entry-tag">named</span>
+      </div>
+      <div class="entry-card" style="animation-delay:0.24s">
+        <div class="entry-top">
+          <span class="entry-author">Anonymous</span>
+          <span class="entry-date">Feb 28 · 7:11am</span>
+        </div>
+        <p class="entry-body">That closure is something you get, not something you're given. I waited two years for a conversation that was never coming. The shift happened when I stopped asking "why did they do this" and started asking "why do I need an answer so badly."</p>
+        <span class="entry-tag">anonymous</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MY DIARY -->
+<div class="page" id="page-diary">
+  <div class="diary-page">
+    <h2 class="diary-title">My Diary</h2>
+    <p class="diary-sub">Your private archive of every prompt you've answered.</p>
+    <div id="diary-entries">
+      <div class="diary-empty">
+        <p>Nothing here yet.<br>Answer today's prompt and it'll appear here.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="about-page">
+    <div class="about-hero">
+      <p class="eyebrow">About the Show</p>
+      <h2>We're <em>semi-articulate.</em><br>And that's kind of the point.</h2>
+      <p>Semi-Articulate is a podcast about the topics that sit just beyond easy words. The feelings you can't quite explain. The questions you think about at 2am. The ideas that seem obvious until someone asks you to actually describe them. Cynthia and Bella try to say them out loud anyway — imperfectly, honestly, and together.</p>
+    </div>
+
+    <hr class="about-divider">
+
+    <p class="hosts-label">Your Hosts</p>
+    <div class="hosts-grid">
+      <div class="host-card">
+        <div class="host-initial">C</div>
+        <h3 class="host-name">Cynthia</h3>
+        <p class="host-role">Co-Host</p>
+        <p class="host-bio">Cynthia is the one who starts the conversation — usually with a question she's been turning over for weeks. She has a gift for naming things that feel impossible to name, and an even bigger gift for making people feel like they're not alone in thinking them.</p>
+      </div>
+      <div class="host-card">
+        <div class="host-initial">B</div>
+        <h3 class="host-name">Bella</h3>
+        <p class="host-role">Co-Host</p>
+        <p class="host-bio">Bella is the one who takes Cynthia's question and spins it somewhere unexpected. Equal parts thoughtful and hilarious, she keeps every episode grounded and human — and is usually the one who says the thing everyone was thinking but couldn't quite get out.</p>
+      </div>
+    </div>
+
+    <div class="about-mission">
+      <p class="eyebrow">Why We Make This</p>
+      <blockquote>"There are so many conversations people are desperate to have — they just don't always have the words yet. We're here to fumble through them together."</blockquote>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let publishMode = 'private';
+  let diaryEntries = [];
+  let feedCount = 38;
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const tab = document.querySelector('.tab[data-page="' + name + '"]');
+    if (tab) tab.classList.add('active');
+  }
+
+  function selectToggle(btn, mode) {
+    document.querySelectorAll('.toggle-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    publishMode = mode;
+  }
+
+  function handleSignup() {
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) { showToast('Please enter a valid email.'); return; }
+    showToast('🎉 Subscribed! First prompt arrives tomorrow morning.');
+    document.getElementById('email-input').value = '';
+  }
+
+  function saveResponse() {
+    const text = document.getElementById('response-text').value.trim();
+    if (!text) { showToast('Write something first!'); return; }
+
+    const now = new Date();
+    const entry = {
+      text, mode: publishMode,
+      question: "What's something you've changed your mind about in the last year — and what actually changed it?",
+      date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    };
+    diaryEntries.unshift(entry);
+    renderDiary();
+
+    if (publishMode !== 'private') {
+      feedCount++;
+      document.getElementById('feed-count').textContent = feedCount + ' responses today';
+      injectFeedEntry(entry);
+    }
+
+    document.getElementById('save-success').style.display = 'block';
+    setTimeout(() => document.getElementById('save-success').style.display = 'none', 3000);
+    showToast(publishMode === 'private' ? '✓ Saved privately.' : '✓ Saved & published to the feed!');
+  }
+
+  function injectFeedEntry(entry) {
+    const label = entry.mode === 'anon' ? 'Anonymous' : '<span>You</span>';
+    const tag = entry.mode === 'anon' ? 'anonymous' : 'named';
+    const card = document.createElement('div');
+    card.className = 'entry-card';
+    card.style.borderColor = 'var(--accent)';
+    card.innerHTML = `<div class="entry-top"><span class="entry-author">${label}</span><span class="entry-date">${entry.date} · ${entry.time}</span></div><p class="entry-body">${entry.text}</p><span class="entry-tag">${tag}</span>`;
+    const container = document.getElementById('feed-entries');
+    container.insertBefore(card, container.firstChild);
+  }
+
+  function renderDiary() {
+    const container = document.getElementById('diary-entries');
+    if (!diaryEntries.length) {
+      container.innerHTML = '<div class="diary-empty"><p>Nothing here yet.<br>Answer today\'s prompt and it\'ll appear here.</p></div>';
+      return;
+    }
+    container.innerHTML = diaryEntries.map((e, i) => `
+      <div class="diary-entry ${e.mode !== 'private' ? 'published' : ''}">
+        <p class="diary-date">${e.date}</p>
+        <p class="diary-q">"${e.question}"</p>
+        <p class="diary-a">${e.text}</p>
+        <span class="diary-status ${e.mode !== 'private' ? 'pub' : ''}">
+          <span class="dot"></span>
+          ${e.mode === 'private' ? 'Private' : e.mode === 'anon' ? 'Published anonymously' : 'Published with your name'}
+        </span>
+      </div>`).join('');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
