@@ -472,7 +472,10 @@
     </div>
 
     <button onclick="savePrompt()" style="padding:0.82rem 2rem;background:var(--accent);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;">Save New Prompt</button>
+    <button onclick="saveAndSend()" style="padding:0.82rem 2rem;background:var(--ink);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-left:0.8rem;">Save & Send Email ♥</button>
     <p id="admin-success" style="display:none;margin-top:1rem;padding:0.8rem 1rem;background:#e8f5e9;border-left:3px solid #4caf50;font-size:0.85rem;color:#2e7d32;border-radius:2px;">✓ Prompt updated! The site will show the new question immediately.</p>
+    <p id="admin-email-success" style="display:none;margin-top:1rem;padding:0.8rem 1rem;background:#e8f5e9;border-left:3px solid #4caf50;font-size:0.85rem;color:#2e7d32;border-radius:2px;">✓ Prompt updated and email sent to all subscribers!</p>
+    <p id="admin-email-error" style="display:none;margin-top:1rem;padding:0.8rem 1rem;background:#fdecea;border-left:3px solid #e53935;font-size:0.85rem;color:#c62828;border-radius:2px;"></p>
   </div>
 </div>
 
@@ -679,6 +682,46 @@
     await loadCurrentPrompt();
     await loadAdminPrompt();
     showToast('✓ Prompt updated!');
+  }
+
+  async function saveAndSend() {
+    const question = document.getElementById('admin-prompt-text').value.trim();
+    const number = parseInt(document.getElementById('admin-prompt-num').value);
+    if (!question) { showToast('Please enter a question.'); return; }
+    if (!number) { showToast('Please enter a prompt number.'); return; }
+
+    showToast('Saving and sending...');
+
+    // Save prompt to DB first
+    const { error } = await sb.from('prompts').insert({ number, question });
+    if (error) { showToast('Error saving prompt.'); console.error(error); return; }
+
+    await loadCurrentPrompt();
+    await loadAdminPrompt();
+
+    // Send email via Vercel function
+    const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    try {
+      const res = await fetch('/api/send-campaign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, promptNumber: number, date })
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('admin-email-success').style.display = 'block';
+        setTimeout(() => document.getElementById('admin-email-success').style.display = 'none', 5000);
+        document.getElementById('admin-prompt-text').value = '';
+        showToast('✓ Sent to all subscribers!');
+      } else {
+        document.getElementById('admin-email-error').textContent = 'Email error: ' + (data.error || 'Unknown error');
+        document.getElementById('admin-email-error').style.display = 'block';
+        showToast('Prompt saved but email failed.');
+      }
+    } catch (err) {
+      document.getElementById('admin-email-error').textContent = 'Could not reach email server.';
+      document.getElementById('admin-email-error').style.display = 'block';
+    }
   }
 
   function selectToggle(btn, mode) {
