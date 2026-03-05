@@ -714,7 +714,8 @@
         document.getElementById('admin-prompt-text').value = '';
         showToast('✓ Sent to all subscribers!');
       } else {
-        document.getElementById('admin-email-error').textContent = 'Email error: ' + (data.error || 'Unknown error');
+        const errMsg = JSON.stringify(data.detail || data.error || data);
+        document.getElementById('admin-email-error').textContent = 'Email error: ' + errMsg;
         document.getElementById('admin-email-error').style.display = 'block';
         showToast('Prompt saved but email failed.');
       }
