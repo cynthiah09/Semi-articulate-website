@@ -488,6 +488,10 @@
     <button onclick="closeAuth()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);">✕</button>
     <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:0.4rem;" id="auth-title">Sign in</h2>
     <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.8rem;" id="auth-sub">Save your diary entries and share with the community.</p>
+    <div id="auth-name-row" style="display:none;gap:0.5rem;margin-bottom:0.6rem;">
+      <input type="text" id="auth-fname" placeholder="First name" style="width:calc(50% - 0.25rem);padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;">
+      <input type="text" id="auth-lname" placeholder="Last name" style="width:calc(50% - 0.25rem);padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;">
+    </div>
     <input type="email" id="auth-email" placeholder="your@email.com" style="width:100%;padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;margin-bottom:0.6rem;">
     <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;margin-bottom:1rem;">
     <button onclick="submitAuth()" style="width:100%;padding:0.82rem;background:var(--accent);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;" id="auth-btn">Sign In</button>
@@ -507,6 +511,7 @@
 
   let publishMode = 'private';
   let currentUser = null;
+  let currentProfile = null;
   let authMode = 'signin';
 
   const CURRENT_PROMPT = {
@@ -519,10 +524,16 @@
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       currentUser = session.user;
+      await loadProfile();
       updateNavForUser();
     }
-    sb.auth.onAuthStateChange((event, session) => {
+    sb.auth.onAuthStateChange(async (event, session) => {
       currentUser = session?.user || null;
+      if (currentUser) {
+        await loadProfile();
+      } else {
+        currentProfile = null;
+      }
       updateNavForUser();
       if (event === 'SIGNED_IN') {
         closeAuth();
@@ -535,11 +546,18 @@
     });
   }
 
+  async function loadProfile() {
+    if (!currentUser) return;
+    const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    currentProfile = data;
+  }
+
   function updateNavForUser() {
     const navLinks = document.querySelector('.nav-links');
+    const name = currentProfile?.full_name || currentUser?.email || '';
     if (currentUser) {
       navLinks.innerHTML = `
-        <span style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:var(--muted);">${currentUser.email}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:var(--muted);">${name}</span>
         <a href="#" onclick="signOut()" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;">Sign Out</a>
         <a href="#" class="nav-cta" onclick="showPage('home'); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Subscribe</a>
       `;
@@ -562,6 +580,8 @@
 
   function toggleAuthMode() {
     authMode = authMode === 'signin' ? 'signup' : 'signin';
+    const nameRow = document.getElementById('auth-name-row');
+    nameRow.style.display = authMode === 'signup' ? 'flex' : 'none';
     document.getElementById('auth-title').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
     document.getElementById('auth-sub').textContent = authMode === 'signin' ? 'Welcome back!' : 'Save your diary entries and share with the community.';
     document.getElementById('auth-btn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
@@ -581,7 +601,16 @@
     if (authMode === 'signin') {
       result = await sb.auth.signInWithPassword({ email, password });
     } else {
+      const fname = document.getElementById('auth-fname').value.trim();
+      const lname = document.getElementById('auth-lname').value.trim();
+      if (!fname) { errEl.textContent = 'Please enter your first name.'; errEl.style.display = 'block'; return; }
       result = await sb.auth.signUp({ email, password });
+      if (!result.error && result.data.user) {
+        await sb.from('profiles').insert({
+          id: result.data.user.id,
+          full_name: (fname + ' ' + lname).trim()
+        });
+      }
     }
 
     if (result.error) {
@@ -589,7 +618,7 @@
       errEl.style.display = 'block';
     } else if (authMode === 'signup') {
       closeAuth();
-      showToast('✓ Account created! Check your email to confirm.');
+      showToast('✓ Account created! You\'re now signed in.');
     }
   }
 
@@ -629,6 +658,18 @@
       return;
     }
 
+    // Check if user already submitted for this prompt
+    const { data: existing } = await sb.from('entries')
+      .select('id')
+      .eq('user_id', currentUser.id)
+      .eq('prompt_number', CURRENT_PROMPT.number)
+      .single();
+
+    if (existing) {
+      showToast('You already answered today\'s prompt!');
+      return;
+    }
+
     const { error } = await sb.from('entries').insert({
       user_id: currentUser.id,
       question: CURRENT_PROMPT.question,
@@ -657,14 +698,13 @@
 
     const { data, error } = await sb
       .from('entries')
-      .select('*')
+      .select('*, profiles(full_name)')
       .in('publish_mode', ['named', 'anon'])
       .eq('prompt_number', CURRENT_PROMPT.number)
       .order('created_at', { ascending: false });
 
     if (error) { container.innerHTML = '<p style="color:var(--muted);">Could not load feed.</p>'; return; }
 
-    // Keep the sample entries + real ones
     const sampleEntries = `
       <div class="entry-card">
         <div class="entry-top"><span class="entry-author"><span>Marcus T.</span></span><span class="entry-date">Feb 28 · 9:14am</span></div>
@@ -691,8 +731,10 @@
       const date = new Date(e.created_at);
       const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-      const author = e.publish_mode === 'anon' ? 'Anonymous' : `<span>${currentUser && e.user_id === currentUser.id ? 'You' : 'Community Member'}</span>`;
-      return `<div class="entry-card" style="border-color:var(--accent);">
+      const isMe = currentUser && e.user_id === currentUser.id;
+      const displayName = isMe ? (currentProfile?.full_name || 'You') : (e.profiles?.full_name || 'Community Member');
+      const author = e.publish_mode === 'anon' ? 'Anonymous' : `<span>${displayName}</span>`;
+      return `<div class="entry-card" style="${isMe ? 'border-color:var(--accent);' : ''}">
         <div class="entry-top"><span class="entry-author">${author}</span><span class="entry-date">${dateStr} · ${timeStr}</span></div>
         <p class="entry-body">${e.answer}</p>
         <span class="entry-tag">${e.publish_mode}</span>
@@ -717,10 +759,7 @@
 
     if (error) { container.innerHTML = '<p style="color:var(--muted);">Could not load diary.</p>'; return; }
 
-    if (!data || data.length === 0) {
-      renderDiaryEmpty();
-      return;
-    }
+    if (!data || data.length === 0) { renderDiaryEmpty(); return; }
 
     container.innerHTML = data.map(e => {
       const date = new Date(e.created_at);
