@@ -450,7 +450,7 @@
 <div class="page" id="page-about">
   <div class="about-page">
     <div class="about-hero">
-      <p class="eyebrow">About the Podcast</p>
+      <p class="eyebrow">About the Show</p>
       <h2>We're <em>semi-articulate.</em><br>And that's kind of the point.</h2>
       <p>Semi-Articulate is a podcast about the topics that sit just beyond easy words. The feelings you can't quite explain. The questions you think about at 2am. The ideas that seem obvious until someone asks you to actually describe them. Cynthia and Bella try to say them out loud anyway — imperfectly, honestly, and together.</p>
     </div>
@@ -463,13 +463,13 @@
         <div class="host-initial">C</div>
         <h3 class="host-name">Cynthia</h3>
         <p class="host-role">Co-Host</p>
-        <p class="host-bio">Cynthia is usually the one who brings the topic. It’s often something small that stuck with her, a moment, a comment, a random thought she couldn’t stop thinking about. Driven by curiosity, when a thought lingers, she’d rather talk about it than ignore it. She puts the idea on the table and lets the conversation build from there. A lot of episodes start because she said, “Wait, can we talk about this?”.</p>
+        <p class="host-bio">Cynthia is the one who starts the conversation — usually with a question she's been turning over for weeks. She has a gift for naming things that feel impossible to name, and an even bigger gift for making people feel like they're not alone in thinking them.</p>
       </div>
       <div class="host-card">
         <div class="host-initial">B</div>
         <h3 class="host-name">Bella</h3>
         <p class="host-role">Co-Host</p>
-        <p class="host-bio">Bella tends to build on whatever Cynthia brings up. She’ll take the initial question and add onto it, looking at it from different angles, connecting it to something else, or pushing it a little further. She can overanalyze at times, but it usually comes from wanting to understand the topic more fully. She gets passionate about the topics that matter to her and often ties in personal experiences if it adds something real to the conversation.</p>
+        <p class="host-bio">Bella is the one who takes Cynthia's question and spins it somewhere unexpected. Equal parts thoughtful and hilarious, she keeps every episode grounded and human — and is usually the one who says the thing everyone was thinking but couldn't quite get out.</p>
       </div>
     </div>
 
@@ -482,17 +482,134 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
-  let publishMode = 'private';
-  let diaryEntries = [];
-  let feedCount = 38;
+<!-- AUTH MODAL -->
+<div id="auth-modal" style="display:none; position:fixed; inset:0; background:rgba(26,23,20,0.5); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:var(--paper); border:1px solid var(--border); border-radius:4px; padding:2.5rem; width:100%; max-width:420px; margin:1rem; position:relative;">
+    <button onclick="closeAuth()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--muted);">✕</button>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:0.4rem;" id="auth-title">Sign in</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1.8rem;" id="auth-sub">Save your diary entries and share with the community.</p>
+    <input type="email" id="auth-email" placeholder="your@email.com" style="width:100%;padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;margin-bottom:0.6rem;">
+    <input type="password" id="auth-password" placeholder="Password" style="width:100%;padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;margin-bottom:1rem;">
+    <button onclick="submitAuth()" style="width:100%;padding:0.82rem;background:var(--accent);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;" id="auth-btn">Sign In</button>
+    <p style="text-align:center;margin-top:1rem;font-size:0.82rem;color:var(--muted);">
+      <span id="auth-toggle-text">Don't have an account?</span>
+      <a href="#" onclick="toggleAuthMode()" style="color:var(--accent);text-decoration:none;" id="auth-toggle-link"> Sign up</a>
+    </p>
+    <p id="auth-error" style="color:#c00;font-size:0.82rem;margin-top:0.8rem;display:none;"></p>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ecfgbujkbuxngnlvubqg.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjZmdidWprYnV4bmdubHZ1YnFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2OTI0NzYsImV4cCI6MjA4ODI2ODQ3Nn0.lDJTFTtEYL9wLd_qQAgsyifSXBKiXlMMENyg10LpbWw';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let publishMode = 'private';
+  let currentUser = null;
+  let authMode = 'signin';
+
+  const CURRENT_PROMPT = {
+    number: 47,
+    question: "What's something you've changed your mind about in the last year — and what actually changed it?"
+  };
+
+  // AUTH
+  async function initAuth() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      updateNavForUser();
+    }
+    sb.auth.onAuthStateChange((event, session) => {
+      currentUser = session?.user || null;
+      updateNavForUser();
+      if (event === 'SIGNED_IN') {
+        closeAuth();
+        showToast('✓ Signed in!');
+        loadDiary();
+      }
+      if (event === 'SIGNED_OUT') {
+        renderDiaryEmpty();
+      }
+    });
+  }
+
+  function updateNavForUser() {
+    const navLinks = document.querySelector('.nav-links');
+    if (currentUser) {
+      navLinks.innerHTML = `
+        <span style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;color:var(--muted);">${currentUser.email}</span>
+        <a href="#" onclick="signOut()" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;">Sign Out</a>
+        <a href="#" class="nav-cta" onclick="showPage('home'); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Subscribe</a>
+      `;
+    } else {
+      navLinks.innerHTML = `
+        <a href="#" onclick="openAuth(); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;">Sign In</a>
+        <a href="#" class="nav-cta" onclick="showPage('home'); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Subscribe</a>
+      `;
+    }
+  }
+
+  function openAuth() {
+    document.getElementById('auth-modal').style.display = 'flex';
+  }
+
+  function closeAuth() {
+    document.getElementById('auth-modal').style.display = 'none';
+    document.getElementById('auth-error').style.display = 'none';
+  }
+
+  function toggleAuthMode() {
+    authMode = authMode === 'signin' ? 'signup' : 'signin';
+    document.getElementById('auth-title').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+    document.getElementById('auth-sub').textContent = authMode === 'signin' ? 'Welcome back!' : 'Save your diary entries and share with the community.';
+    document.getElementById('auth-btn').textContent = authMode === 'signin' ? 'Sign In' : 'Create Account';
+    document.getElementById('auth-toggle-text').textContent = authMode === 'signin' ? "Don't have an account?" : 'Already have an account?';
+    document.getElementById('auth-toggle-link').textContent = authMode === 'signin' ? ' Sign up' : ' Sign in';
+  }
+
+  async function submitAuth() {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const errEl = document.getElementById('auth-error');
+    errEl.style.display = 'none';
+
+    if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.style.display = 'block'; return; }
+
+    let result;
+    if (authMode === 'signin') {
+      result = await sb.auth.signInWithPassword({ email, password });
+    } else {
+      result = await sb.auth.signUp({ email, password });
+    }
+
+    if (result.error) {
+      errEl.textContent = result.error.message;
+      errEl.style.display = 'block';
+    } else if (authMode === 'signup') {
+      closeAuth();
+      showToast('✓ Account created! Check your email to confirm.');
+    }
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    showToast('Signed out.');
+  }
+
+  // PAGES
   function showPage(name) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + name).classList.add('active');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     const tab = document.querySelector('.tab[data-page="' + name + '"]');
     if (tab) tab.classList.add('active');
+    if (name === 'feed') loadFeed();
+    if (name === 'diary') {
+      if (currentUser) loadDiary();
+      else renderDiarySignIn();
+    }
   }
 
   function selectToggle(btn, mode) {
@@ -501,65 +618,135 @@
     publishMode = mode;
   }
 
-  function handleSignup() {
-    const email = document.getElementById('email-input').value.trim();
-    if (!email || !email.includes('@')) { showToast('Please enter a valid email.'); return; }
-    showToast('🎉 Subscribed! First prompt arrives tomorrow morning.');
-    document.getElementById('email-input').value = '';
-  }
-
-  function saveResponse() {
+  // SAVE RESPONSE
+  async function saveResponse() {
     const text = document.getElementById('response-text').value.trim();
     if (!text) { showToast('Write something first!'); return; }
 
-    const now = new Date();
-    const entry = {
-      text, mode: publishMode,
-      question: "What's something you've changed your mind about in the last year — and what actually changed it?",
-      date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      time: now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-    };
-    diaryEntries.unshift(entry);
-    renderDiary();
+    if (!currentUser) {
+      openAuth();
+      showToast('Sign in to save your response.');
+      return;
+    }
 
-    if (publishMode !== 'private') {
-      feedCount++;
-      document.getElementById('feed-count').textContent = feedCount + ' responses today';
-      injectFeedEntry(entry);
+    const { error } = await sb.from('entries').insert({
+      user_id: currentUser.id,
+      question: CURRENT_PROMPT.question,
+      answer: text,
+      publish_mode: publishMode,
+      prompt_number: CURRENT_PROMPT.number,
+      created_at: new Date().toISOString()
+    });
+
+    if (error) {
+      showToast('Error saving. Try again.');
+      console.error(error);
+      return;
     }
 
     document.getElementById('save-success').style.display = 'block';
     setTimeout(() => document.getElementById('save-success').style.display = 'none', 3000);
-    showToast(publishMode === 'private' ? '✓ Saved privately.' : '✓ Saved & published to the feed!');
+    showToast(publishMode === 'private' ? '✓ Saved privately to your diary.' : '✓ Saved & published to the feed!');
+    document.getElementById('response-text').value = '';
   }
 
-  function injectFeedEntry(entry) {
-    const label = entry.mode === 'anon' ? 'Anonymous' : '<span>You</span>';
-    const tag = entry.mode === 'anon' ? 'anonymous' : 'named';
-    const card = document.createElement('div');
-    card.className = 'entry-card';
-    card.style.borderColor = 'var(--accent)';
-    card.innerHTML = `<div class="entry-top"><span class="entry-author">${label}</span><span class="entry-date">${entry.date} · ${entry.time}</span></div><p class="entry-body">${entry.text}</p><span class="entry-tag">${tag}</span>`;
+  // LOAD FEED
+  async function loadFeed() {
     const container = document.getElementById('feed-entries');
-    container.insertBefore(card, container.firstChild);
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;padding:2rem 0;">Loading...</p>';
+
+    const { data, error } = await sb
+      .from('entries')
+      .select('*')
+      .in('publish_mode', ['named', 'anon'])
+      .eq('prompt_number', CURRENT_PROMPT.number)
+      .order('created_at', { ascending: false });
+
+    if (error) { container.innerHTML = '<p style="color:var(--muted);">Could not load feed.</p>'; return; }
+
+    // Keep the sample entries + real ones
+    const sampleEntries = `
+      <div class="entry-card">
+        <div class="entry-top"><span class="entry-author"><span>Marcus T.</span></span><span class="entry-date">Feb 28 · 9:14am</span></div>
+        <p class="entry-body">I used to think ambition was always a virtue. Then I watched a close friend burn out chasing a version of success that wasn't even hers. The thing that changed my mind wasn't a book or a podcast — it was just watching someone I admired look completely hollow after getting exactly what she said she wanted.</p>
+        <span class="entry-tag">named</span>
+      </div>
+      <div class="entry-card">
+        <div class="entry-top"><span class="entry-author">Anonymous</span><span class="entry-date">Feb 28 · 8:02am</span></div>
+        <p class="entry-body">Honestly? That being a morning person is a personality, not a discipline. I spent years thinking I was lazy for not being sharp at 6am. Turns out I'm just a different kind of person. Letting go of that shame was weirdly the most productive thing I did all year.</p>
+        <span class="entry-tag">anonymous</span>
+      </div>
+      <div class="entry-card">
+        <div class="entry-top"><span class="entry-author"><span>Priya S.</span></span><span class="entry-date">Feb 28 · 7:45am</span></div>
+        <p class="entry-body">I changed my mind about apologies. I used to think a good apology needed a long explanation. Now I think that's just self-protection wearing a sorry face. What changed it was receiving one from my dad — two sentences, no excuses. It was the first one that ever actually landed.</p>
+        <span class="entry-tag">named</span>
+      </div>
+      <div class="entry-card">
+        <div class="entry-top"><span class="entry-author">Anonymous</span><span class="entry-date">Feb 28 · 7:11am</span></div>
+        <p class="entry-body">That closure is something you get, not something you're given. I waited two years for a conversation that was never coming. The shift happened when I stopped asking "why did they do this" and started asking "why do I need an answer so badly."</p>
+        <span class="entry-tag">anonymous</span>
+      </div>`;
+
+    const realEntries = (data || []).map(e => {
+      const date = new Date(e.created_at);
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      const author = e.publish_mode === 'anon' ? 'Anonymous' : `<span>${currentUser && e.user_id === currentUser.id ? 'You' : 'Community Member'}</span>`;
+      return `<div class="entry-card" style="border-color:var(--accent);">
+        <div class="entry-top"><span class="entry-author">${author}</span><span class="entry-date">${dateStr} · ${timeStr}</span></div>
+        <p class="entry-body">${e.answer}</p>
+        <span class="entry-tag">${e.publish_mode}</span>
+      </div>`;
+    }).join('');
+
+    const total = (data?.length || 0) + 4;
+    document.getElementById('feed-count').textContent = total + ' responses today';
+    container.innerHTML = realEntries + sampleEntries;
   }
 
-  function renderDiary() {
+  // LOAD DIARY
+  async function loadDiary() {
     const container = document.getElementById('diary-entries');
-    if (!diaryEntries.length) {
-      container.innerHTML = '<div class="diary-empty"><p>Nothing here yet.<br>Answer today\'s prompt and it\'ll appear here.</p></div>';
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.9rem;padding:2rem 0;">Loading...</p>';
+
+    const { data, error } = await sb
+      .from('entries')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) { container.innerHTML = '<p style="color:var(--muted);">Could not load diary.</p>'; return; }
+
+    if (!data || data.length === 0) {
+      renderDiaryEmpty();
       return;
     }
-    container.innerHTML = diaryEntries.map((e, i) => `
-      <div class="diary-entry ${e.mode !== 'private' ? 'published' : ''}">
-        <p class="diary-date">${e.date}</p>
+
+    container.innerHTML = data.map(e => {
+      const date = new Date(e.created_at);
+      const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `<div class="diary-entry ${e.publish_mode !== 'private' ? 'published' : ''}">
+        <p class="diary-date">${dateStr}</p>
         <p class="diary-q">"${e.question}"</p>
-        <p class="diary-a">${e.text}</p>
-        <span class="diary-status ${e.mode !== 'private' ? 'pub' : ''}">
+        <p class="diary-a">${e.answer}</p>
+        <span class="diary-status ${e.publish_mode !== 'private' ? 'pub' : ''}">
           <span class="dot"></span>
-          ${e.mode === 'private' ? 'Private' : e.mode === 'anon' ? 'Published anonymously' : 'Published with your name'}
+          ${e.publish_mode === 'private' ? 'Private' : e.publish_mode === 'anon' ? 'Published anonymously' : 'Published with your name'}
         </span>
-      </div>`).join('');
+      </div>`;
+    }).join('');
+  }
+
+  function renderDiaryEmpty() {
+    document.getElementById('diary-entries').innerHTML = '<div class="diary-empty"><p>Nothing here yet.<br>Answer today\'s prompt and it\'ll appear here.</p></div>';
+  }
+
+  function renderDiarySignIn() {
+    document.getElementById('diary-entries').innerHTML = `
+      <div class="diary-empty">
+        <p>Sign in to see your diary.</p>
+        <button onclick="openAuth()" style="margin-top:1rem;padding:0.7rem 1.4rem;background:var(--accent);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-radius:2px;">Sign In</button>
+      </div>`;
   }
 
   function showToast(msg) {
@@ -568,6 +755,10 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  // INIT
+  initAuth();
+  loadFeed();
 </script>
 </body>
 </html>
