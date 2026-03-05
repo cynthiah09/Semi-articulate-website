@@ -14,8 +14,10 @@ export default async function handler(req, res) {
   const MAILCHIMP_AUDIENCE_ID = process.env.MAILCHIMP_AUDIENCE_ID;
   const MAILCHIMP_SERVER = 'us4';
 
+  const authHeader = 'Basic ' + Buffer.from('anystring:' + MAILCHIMP_API_KEY).toString('base64');
+
   const headers = {
-    'Authorization': `Bearer ${MAILCHIMP_API_KEY}`,
+    'Authorization': authHeader,
     'Content-Type': 'application/json'
   };
 
@@ -38,6 +40,7 @@ export default async function handler(req, res) {
     });
 
     const campaign = await campaignRes.json();
+    console.log('Campaign response:', JSON.stringify(campaign));
     if (!campaign.id) {
       return res.status(500).json({ error: 'Failed to create campaign', detail: campaign });
     }
