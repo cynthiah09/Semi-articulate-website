@@ -32,9 +32,9 @@ export default async function handler(req, res) {
         settings: {
           from_name: 'Semi-Articulate Podcast',
           reply_to: 'like.semi.articulate.podcast@gmail.com',
-          subject_line: '*|FNAME|*, here\'s a prompt to start your day!',
+          subject_line: '*|FNAME|*, here\u2019s a prompt to start your day!',
           preview_text: 'No right answers. Just yours.',
-          title: `Prompt #${promptNumber} - ${date}`,
+          title: 'Prompt #' + promptNumber + ' - ' + date
         }
       })
     });
