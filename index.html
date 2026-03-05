@@ -249,6 +249,7 @@
   <button class="tab" onclick="showPage('feed')" data-page="feed">Community Feed</button>
   <button class="tab" onclick="showPage('diary')" data-page="diary">My Diary</button>
   <button class="tab" onclick="showPage('about')" data-page="about">About</button>
+  <button class="tab" id="admin-tab" onclick="showPage('admin')" data-page="admin" style="display:none;">Admin</button>
 </div>
 
 <!-- HOME -->
@@ -364,8 +365,8 @@
 <!-- TODAY'S PROMPT -->
 <div class="page" id="page-prompt">
   <div class="prompt-page">
-    <p class="prompt-meta">Prompt #47 &nbsp;·&nbsp; Feb 28, 2026</p>
-    <h2 class="prompt-question">"What's something you've changed your mind about in the last year — and what actually changed it?"</h2>
+    <p class="prompt-meta" id="prompt-meta-text">Prompt #47 &nbsp;·&nbsp; Today</p>
+    <h2 class="prompt-question" id="prompt-question-text">"What's something you've changed your mind about in the last year — and what actually changed it?"</h2>
     <hr class="divider">
     <p class="response-label">Your response</p>
     <textarea class="response-box" id="response-text" placeholder="Start writing… there's no wrong answer."></textarea>
@@ -394,42 +395,9 @@
     </div>
     <div class="feed-prompt-banner">
       <p class="eyebrow">Today's Prompt</p>
-      <p>"What's something you've changed your mind about in the last year — and what actually changed it?"</p>
+      <p id="feed-prompt-text">"What's something you've changed your mind about in the last year — and what actually changed it?"</p>
     </div>
-    <div id="feed-entries">
-      <div class="entry-card">
-        <div class="entry-top">
-          <span class="entry-author"><span>Marcus T.</span></span>
-          <span class="entry-date">Feb 28 · 9:14am</span>
-        </div>
-        <p class="entry-body">I used to think ambition was always a virtue. Then I watched a close friend burn out chasing a version of success that wasn't even hers. The thing that changed my mind wasn't a book or a podcast — it was just watching someone I admired look completely hollow after getting exactly what she said she wanted.</p>
-        <span class="entry-tag">named</span>
-      </div>
-      <div class="entry-card" style="animation-delay:0.08s">
-        <div class="entry-top">
-          <span class="entry-author">Anonymous</span>
-          <span class="entry-date">Feb 28 · 8:02am</span>
-        </div>
-        <p class="entry-body">Honestly? That being a morning person is a personality, not a discipline. I spent years thinking I was lazy for not being sharp at 6am. Turns out I'm just a different kind of person. Letting go of that shame was weirdly the most productive thing I did all year.</p>
-        <span class="entry-tag">anonymous</span>
-      </div>
-      <div class="entry-card" style="animation-delay:0.16s">
-        <div class="entry-top">
-          <span class="entry-author"><span>Priya S.</span></span>
-          <span class="entry-date">Feb 28 · 7:45am</span>
-        </div>
-        <p class="entry-body">I changed my mind about apologies. I used to think a good apology needed a long explanation. Now I think that's just self-protection wearing a sorry face. What changed it was receiving one from my dad — two sentences, no excuses. It was the first one that ever actually landed.</p>
-        <span class="entry-tag">named</span>
-      </div>
-      <div class="entry-card" style="animation-delay:0.24s">
-        <div class="entry-top">
-          <span class="entry-author">Anonymous</span>
-          <span class="entry-date">Feb 28 · 7:11am</span>
-        </div>
-        <p class="entry-body">That closure is something you get, not something you're given. I waited two years for a conversation that was never coming. The shift happened when I stopped asking "why did they do this" and started asking "why do I need an answer so badly."</p>
-        <span class="entry-tag">anonymous</span>
-      </div>
-    </div>
+    <div id="feed-entries"></div>
   </div>
 </div>
 
@@ -480,6 +448,34 @@
   </div>
 </div>
 
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div style="max-width:680px;margin:0 auto;padding:4rem 2rem;">
+    <p class="eyebrow">Admin Panel</p>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:0.4rem;">Daily Prompt</h2>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:2.5rem;font-weight:300;">Update today's prompt. This will immediately show on the site and in the community feed.</p>
+
+    <div style="background:var(--paper2);border:1px solid var(--border);border-radius:2px;padding:2rem;margin-bottom:1.5rem;">
+      <p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Current Prompt</p>
+      <p id="admin-current-prompt" style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.05rem;line-height:1.5;color:var(--ink);">Loading...</p>
+      <p id="admin-current-num" style="font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.5rem;"></p>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;">Prompt Number</p>
+      <input type="number" id="admin-prompt-num" placeholder="e.g. 48" style="width:100%;padding:0.82rem 1rem;border:1px solid var(--border);background:var(--light);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);border-radius:2px;outline:none;">
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+      <p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem;">New Question</p>
+      <textarea id="admin-prompt-text" placeholder="Type your question here..." style="width:100%;min-height:120px;padding:1rem 1.2rem;border:1px solid var(--border);background:var(--light);font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;line-height:1.6;color:var(--ink);border-radius:2px;outline:none;resize:vertical;"></textarea>
+    </div>
+
+    <button onclick="savePrompt()" style="padding:0.82rem 2rem;background:var(--accent);color:white;border:none;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;">Save New Prompt</button>
+    <p id="admin-success" style="display:none;margin-top:1rem;padding:0.8rem 1rem;background:#e8f5e9;border-left:3px solid #4caf50;font-size:0.85rem;color:#2e7d32;border-radius:2px;">✓ Prompt updated! The site will show the new question immediately.</p>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- AUTH MODAL -->
@@ -514,10 +510,22 @@
   let currentProfile = null;
   let authMode = 'signin';
 
-  const CURRENT_PROMPT = {
+  const ADMIN_EMAIL = 'like.semi.articulate.podcast@gmail.com';
+  let CURRENT_PROMPT = {
     number: 47,
     question: "What's something you've changed your mind about in the last year — and what actually changed it?"
   };
+
+  // LOAD PROMPT FROM DB
+  async function loadCurrentPrompt() {
+    const { data } = await sb.from('prompts').select('*').order('created_at', { ascending: false }).limit(1).single();
+    if (data) {
+      CURRENT_PROMPT = { number: data.number, question: data.question };
+      document.getElementById('prompt-question-text').textContent = '"' + data.question + '"';
+      document.getElementById('prompt-meta-text').textContent = 'Prompt #' + data.number + ' · ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('feed-prompt-text').textContent = '"' + data.question + '"';
+    }
+  }
 
   // AUTH
   async function initAuth() {
@@ -561,11 +569,16 @@
         <a href="#" onclick="signOut()" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;">Sign Out</a>
         <a href="#" class="nav-cta" onclick="showPage('home'); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Subscribe</a>
       `;
+      // Show admin tab only for admin email
+      if (currentUser.email === ADMIN_EMAIL) {
+        document.getElementById('admin-tab').style.display = 'block';
+      }
     } else {
       navLinks.innerHTML = `
         <a href="#" onclick="openAuth(); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;">Sign In</a>
         <a href="#" class="nav-cta" onclick="showPage('home'); return false;" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;">Subscribe</a>
       `;
+      document.getElementById('admin-tab').style.display = 'none';
     }
   }
 
@@ -639,6 +652,33 @@
       if (currentUser) loadDiary();
       else renderDiarySignIn();
     }
+    if (name === 'admin') loadAdminPrompt();
+  }
+
+  async function loadAdminPrompt() {
+    const { data } = await sb.from('prompts').select('*').order('created_at', { ascending: false }).limit(1).single();
+    if (data) {
+      document.getElementById('admin-current-prompt').textContent = '"' + data.question + '"';
+      document.getElementById('admin-current-num').textContent = 'Prompt #' + data.number;
+      document.getElementById('admin-prompt-num').value = data.number + 1;
+    }
+  }
+
+  async function savePrompt() {
+    const question = document.getElementById('admin-prompt-text').value.trim();
+    const number = parseInt(document.getElementById('admin-prompt-num').value);
+    if (!question) { showToast('Please enter a question.'); return; }
+    if (!number) { showToast('Please enter a prompt number.'); return; }
+
+    const { error } = await sb.from('prompts').insert({ number, question });
+    if (error) { showToast('Error saving prompt.'); console.error(error); return; }
+
+    document.getElementById('admin-success').style.display = 'block';
+    setTimeout(() => document.getElementById('admin-success').style.display = 'none', 4000);
+    document.getElementById('admin-prompt-text').value = '';
+    await loadCurrentPrompt();
+    await loadAdminPrompt();
+    showToast('✓ Prompt updated!');
   }
 
   function selectToggle(btn, mode) {
@@ -705,27 +745,11 @@
 
     if (error) { container.innerHTML = '<p style="color:var(--muted);">Could not load feed.</p>'; return; }
 
-    const sampleEntries = `
-      <div class="entry-card">
-        <div class="entry-top"><span class="entry-author"><span>Marcus T.</span></span><span class="entry-date">Feb 28 · 9:14am</span></div>
-        <p class="entry-body">I used to think ambition was always a virtue. Then I watched a close friend burn out chasing a version of success that wasn't even hers. The thing that changed my mind wasn't a book or a podcast — it was just watching someone I admired look completely hollow after getting exactly what she said she wanted.</p>
-        <span class="entry-tag">named</span>
-      </div>
-      <div class="entry-card">
-        <div class="entry-top"><span class="entry-author">Anonymous</span><span class="entry-date">Feb 28 · 8:02am</span></div>
-        <p class="entry-body">Honestly? That being a morning person is a personality, not a discipline. I spent years thinking I was lazy for not being sharp at 6am. Turns out I'm just a different kind of person. Letting go of that shame was weirdly the most productive thing I did all year.</p>
-        <span class="entry-tag">anonymous</span>
-      </div>
-      <div class="entry-card">
-        <div class="entry-top"><span class="entry-author"><span>Priya S.</span></span><span class="entry-date">Feb 28 · 7:45am</span></div>
-        <p class="entry-body">I changed my mind about apologies. I used to think a good apology needed a long explanation. Now I think that's just self-protection wearing a sorry face. What changed it was receiving one from my dad — two sentences, no excuses. It was the first one that ever actually landed.</p>
-        <span class="entry-tag">named</span>
-      </div>
-      <div class="entry-card">
-        <div class="entry-top"><span class="entry-author">Anonymous</span><span class="entry-date">Feb 28 · 7:11am</span></div>
-        <p class="entry-body">That closure is something you get, not something you're given. I waited two years for a conversation that was never coming. The shift happened when I stopped asking "why did they do this" and started asking "why do I need an answer so badly."</p>
-        <span class="entry-tag">anonymous</span>
-      </div>`;
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="diary-empty"><p>No responses yet.<br>Be the first to answer today\'s prompt!</p></div>';
+      document.getElementById('feed-count').textContent = '0 responses today';
+      return;
+    }
 
     const realEntries = (data || []).map(e => {
       const date = new Date(e.created_at);
@@ -741,9 +765,9 @@
       </div>`;
     }).join('');
 
-    const total = (data?.length || 0) + 4;
-    document.getElementById('feed-count').textContent = total + ' responses today';
-    container.innerHTML = realEntries + sampleEntries;
+    const total = data?.length || 0;
+    document.getElementById('feed-count').textContent = total + ' response' + (total === 1 ? '' : 's') + ' today';
+    container.innerHTML = realEntries;
   }
 
   // LOAD DIARY
@@ -797,6 +821,7 @@
 
   // INIT
   initAuth();
+  loadCurrentPrompt();
   loadFeed();
 </script>
 </body>
