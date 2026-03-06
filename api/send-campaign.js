@@ -31,7 +31,7 @@ export default async function handler(req, res) {
         recipients: { list_id: MAILCHIMP_AUDIENCE_ID },
         settings: {
           from_name: 'Semi-Articulate Podcast',
-          reply_to: 'like.semi.articulate.podcast@gmail.com',
+          reply_to: 'hello@semiarticulatepodcast.com',
           subject_line: '*|FNAME|*, here\u2019s a prompt to start your day!',
           preview_text: 'No right answers. Just yours.',
           title: 'Prompt #' + promptNumber + ' - ' + date
